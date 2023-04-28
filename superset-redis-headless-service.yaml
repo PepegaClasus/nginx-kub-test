@@ -10,7 +10,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: superset
     meta.helm.sh/release-namespace: apache-superset
-  selfLink: /api/v1/namespaces/apache-superset/services/superset-redis-headless
 status:
   loadBalancer: {}
 spec:

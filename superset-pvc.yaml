@@ -13,8 +13,6 @@ metadata:
     volume.kubernetes.io/storage-provisioner: dobs.csi.digitalocean.com
   finalizers:
     - kubernetes.io/pvc-protection
-  selfLink: >-
-    /api/v1/namespaces/apache-superset/persistentvolumeclaims/data-superset-postgresql-0
 status:
   phase: Bound
   accessModes:

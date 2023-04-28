@@ -9,7 +9,6 @@ metadata:
     batch.kubernetes.io/job-tracking: ''
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-delete-policy: before-hook-creation
-  selfLink: /apis/batch/v1/namespaces/apache-superset/jobs/superset-init-db
 status:
   conditions:
     - type: Complete

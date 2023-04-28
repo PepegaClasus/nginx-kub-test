@@ -12,7 +12,6 @@ metadata:
     deployment.kubernetes.io/revision: '1'
     meta.helm.sh/release-name: superset
     meta.helm.sh/release-namespace: apache-superset
-  selfLink: /apis/apps/v1/namespaces/apache-superset/deployments/superset-worker
 status:
   observedGeneration: 1
   replicas: 1

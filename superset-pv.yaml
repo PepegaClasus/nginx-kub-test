@@ -9,7 +9,6 @@ metadata:
   finalizers:
     - kubernetes.io/pv-protection
     - external-attacher/dobs-csi-digitalocean-com
-  selfLink: /api/v1/persistentvolumes/pvc-b5dcfd7f-bc52-48e2-9894-1cad9b9e30a6
 status:
   phase: Bound
 spec:
@@ -25,10 +24,7 @@ spec:
     - ReadWriteOnce
   claimRef:
     kind: PersistentVolumeClaim
-    namespace: apache-superset
     name: data-superset-postgresql-0
-    uid: b5dcfd7f-bc52-48e2-9894-1cad9b9e30a6
-    apiVersion: v1
     resourceVersion: '750782'
   persistentVolumeReclaimPolicy: Delete
   storageClassName: do-block-storage
