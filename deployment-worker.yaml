@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset-worker
+  labels:
+    app: superset-worker
+    app.kubernetes.io/managed-by: Helm
+    chart: superset-0.9.3
+    heritage: Helm
+    release: superset
+  annotations:
+    deployment.kubernetes.io/revision: '1'
+    meta.helm.sh/release-name: superset
+    meta.helm.sh/release-namespace: apache-superset
+  selfLink: /apis/apps/v1/namespaces/apache-superset/deployments/superset-worker
+status:
+  observedGeneration: 1
+  replicas: 1
+  updatedReplicas: 1
+  readyReplicas: 1
+  availableReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2023-04-28T16:24:30Z'
+      lastTransitionTime: '2023-04-28T16:24:30Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2023-04-28T16:24:30Z'
+      lastTransitionTime: '2023-04-28T16:23:55Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "superset-worker-78c84764b6" has successfully progressed.
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superset-worker
+      release: superset
+  template:
+    metadata:
+      labels:
+        app: superset-worker
+        release: superset
+      annotations:
+        checksum/configOverrides: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/configOverridesFiles: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/connections: a91716d6d1088e870fbe02159dc0b066dd011885aa08a22fbe60ea1cd4720f82
+        checksum/extraConfigs: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/extraSecretEnv: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/extraSecrets: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/superset_config.py: 9eaa8f3a1f38833081d5781146c652f8ec3dfb6e5588e7bc0ddb5bb986292d9a
+    spec:
+      volumes:
+        - name: superset-config
+          secret:
+            secretName: superset-config
+            defaultMode: 420
+      initContainers:
+        - name: wait-for-postgres-redis
+          image: jwilder/dockerize:latest
+          command:
+            - /bin/sh
+            - '-c'
+            - >-
+              dockerize -wait "tcp://$DB_HOST:$DB_PORT" -wait
+              "tcp://$REDIS_HOST:$REDIS_PORT" -timeout 120s
+          envFrom:
+            - secretRef:
+                name: superset-env
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      containers:
+        - name: superset
+          image: apache/superset:2.1.0
+          command:
+            - /bin/sh
+            - '-c'
+            - >-
+              . /app/pythonpath/superset_bootstrap.sh; celery
+              --app=superset.tasks.celery_app:app worker
+          envFrom:
+            - secretRef:
+                name: superset-env
+          env:
+            - name: SUPERSET_PORT
+              value: '8088'
+          resources: {}
+          volumeMounts:
+            - name: superset-config
+              readOnly: true
+              mountPath: /app/pythonpath
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - >-
+                  celery -A superset.tasks.celery_app:app inspect ping -d
+                  celery@$HOSTNAME
+            initialDelaySeconds: 120
+            timeoutSeconds: 60
+            periodSeconds: 60
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext:
+        runAsUser: 0
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
