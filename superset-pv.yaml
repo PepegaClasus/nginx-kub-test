@@ -24,7 +24,7 @@ spec:
     - ReadWriteOnce
   claimRef:
     kind: PersistentVolumeClaim
-    name: data-superset-postgresql-0
+    name: data-superset-postgresql-01
     resourceVersion: '750782'
   persistentVolumeReclaimPolicy: Delete
   storageClassName: do-block-storage
