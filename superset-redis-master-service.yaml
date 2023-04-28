@@ -12,8 +12,6 @@ metadata:
     meta.helm.sh/release-name: superset
     meta.helm.sh/release-namespace: apache-superset
   selfLink: /api/v1/namespaces/apache-superset/services/superset-redis-master
-status:
-  loadBalancer: {}
 spec:
   ports:
     - name: tcp-redis
