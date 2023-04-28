@@ -13,8 +13,6 @@ metadata:
     volume.kubernetes.io/storage-provisioner: dobs.csi.digitalocean.com
   finalizers:
     - kubernetes.io/pvc-protection
-status:
-  phase: Bound
   accessModes:
     - ReadWriteOnce
   capacity:

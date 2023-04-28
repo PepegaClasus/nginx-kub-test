@@ -2,15 +2,11 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: pvc-1
+  namespace: apache-test
   annotations:
     pv.kubernetes.io/provisioned-by: dobs.csi.digitalocean.com
     volume.kubernetes.io/provisioner-deletion-secret-name: ''
     volume.kubernetes.io/provisioner-deletion-secret-namespace: ''
-  finalizers:
-    - kubernetes.io/pv-protection
-    - external-attacher/dobs-csi-digitalocean-com
-status:
-  phase: Bound
 spec:
   capacity:
     storage: 8Gi
@@ -25,7 +21,7 @@ spec:
   claimRef:
     kind: PersistentVolumeClaim
     name: data-superset-postgresql-0
-    resourceVersion: '750782'
+    namespace: apache-test
   persistentVolumeReclaimPolicy: Delete
   storageClassName: do-block-storage
   volumeMode: Filesystem
