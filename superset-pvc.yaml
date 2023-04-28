@@ -11,8 +11,6 @@ metadata:
     pv.kubernetes.io/bound-by-controller: 'yes'
     volume.beta.kubernetes.io/storage-provisioner: dobs.csi.digitalocean.com
     volume.kubernetes.io/storage-provisioner: dobs.csi.digitalocean.com
-  finalizers:
-    - kubernetes.io/pvc-protection
   accessModes:
     - ReadWriteOnce
   capacity:
