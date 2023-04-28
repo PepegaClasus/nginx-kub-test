@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: superset
-  namespace: apache-superset
   labels:
     app: superset
     app.kubernetes.io/managed-by: Helm

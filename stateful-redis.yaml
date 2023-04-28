@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: superset-redis-master
-  namespace: apache-superset
   labels:
     app.kubernetes.io/component: master
     app.kubernetes.io/instance: superset

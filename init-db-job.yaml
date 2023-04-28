@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: superset-init-db
-  namespace: apache-superset
   labels:
     controller-uid: 4d45069a-abf8-48c7-8438-a399106f2740
     job-name: superset-init-db
