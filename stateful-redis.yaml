@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: superset-redis-master
+  namespace: apache-superset
+  labels:
+    app.kubernetes.io/component: master
+    app.kubernetes.io/instance: superset
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: redis
+    helm.sh/chart: redis-17.9.4
+  annotations:
+    meta.helm.sh/release-name: superset
+    meta.helm.sh/release-namespace: apache-superset
+  selfLink: /apis/apps/v1/namespaces/apache-superset/statefulsets/superset-redis-master
+status:
+  observedGeneration: 1
+  replicas: 1
+  readyReplicas: 1
+  currentReplicas: 1
+  updatedReplicas: 1
+  currentRevision: superset-redis-master-57cbfc7c95
+  updateRevision: superset-redis-master-57cbfc7c95
+  collisionCount: 0
+  availableReplicas: 1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: master
+      app.kubernetes.io/instance: superset
+      app.kubernetes.io/name: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: master
+        app.kubernetes.io/instance: superset
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: redis
+        helm.sh/chart: redis-17.9.4
+      annotations:
+        checksum/configmap: e9f1ca803149bfa561d7b3f4c5529cc931f3794728e20e6e16cc9c6d3936c7ea
+        checksum/health: bfdee90a9f1714c77804621085b454251a3e81cc9f4cb5a214c5e969f76bb4df
+        checksum/scripts: 09c88d85e276ad6545cb15b68eb84c3464cdf7fc7f9f72a0f5c4b8eb4a69f589
+        checksum/secret: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+    spec:
+      volumes:
+        - name: start-scripts
+          configMap:
+            name: superset-redis-scripts
+            defaultMode: 493
+        - name: health
+          configMap:
+            name: superset-redis-health
+            defaultMode: 493
+        - name: config
+          configMap:
+            name: superset-redis-configuration
+            defaultMode: 420
+        - name: redis-tmp-conf
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: redis-data
+          emptyDir: {}
+      containers:
+        - name: redis
+          image: docker.io/bitnami/redis:7.0.10-debian-11-r4
+          command:
+            - /bin/bash
+          args:
+            - '-c'
+            - /opt/bitnami/scripts/start-scripts/start-master.sh
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          env:
+            - name: BITNAMI_DEBUG
+              value: 'false'
+            - name: REDIS_REPLICATION_MODE
+              value: master
+            - name: ALLOW_EMPTY_PASSWORD
+              value: 'yes'
+            - name: REDIS_TLS_ENABLED
+              value: 'no'
+            - name: REDIS_PORT
+              value: '6379'
+          resources: {}
+          volumeMounts:
+            - name: start-scripts
+              mountPath: /opt/bitnami/scripts/start-scripts
+            - name: health
+              mountPath: /health
+            - name: redis-data
+              mountPath: /data
+            - name: config
+              mountPath: /opt/bitnami/redis/mounted-etc
+            - name: redis-tmp-conf
+              mountPath: /opt/bitnami/redis/etc/
+            - name: tmp
+              mountPath: /tmp
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - /health/ping_liveness_local.sh 5
+            initialDelaySeconds: 20
+            timeoutSeconds: 6
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - '-c'
+                - /health/ping_readiness_local.sh 1
+            initialDelaySeconds: 20
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1001
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      serviceAccountName: superset-redis
+      serviceAccount: superset-redis
+      securityContext:
+        fsGroup: 1001
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/component: master
+                    app.kubernetes.io/instance: superset
+                    app.kubernetes.io/name: redis
+                topologyKey: kubernetes.io/hostname
+      schedulerName: default-scheduler
+  serviceName: superset-redis-headless
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 10

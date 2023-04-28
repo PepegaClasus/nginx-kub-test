@@ -1,18 +1,124 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: superset
+  namespace: apache-superset
+  labels:
+    app: superset
+    app.kubernetes.io/managed-by: Helm
+    chart: superset-0.9.3
+    heritage: Helm
+    release: superset
+  annotations:
+    deployment.kubernetes.io/revision: '1'
+    meta.helm.sh/release-name: superset
+    meta.helm.sh/release-namespace: apache-superset
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: superset
+      release: superset
   template:
     metadata:
       labels:
-        app: nginx
+        app: superset
+        release: superset
+      annotations:
+        checksum/configOverrides: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/configOverridesFiles: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/connections: a91716d6d1088e870fbe02159dc0b066dd011885aa08a22fbe60ea1cd4720f82
+        checksum/extraConfigs: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/extraSecretEnv: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/extraSecrets: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        checksum/superset_bootstrap.sh: dc9a47141051ced34960c313860a55e03eb48c1fa36a0ed25c03ad60cd3b5c48
+        checksum/superset_config.py: 9eaa8f3a1f38833081d5781146c652f8ec3dfb6e5588e7bc0ddb5bb986292d9a
+        checksum/superset_init.sh: e6b1e8eac1f7a79a07a6c72a0e2ee6e09654eeb439c6bbe61bfd676917c41e02
     spec:
+      volumes:
+        - name: superset-config
+          secret:
+            secretName: superset-config
+            defaultMode: 420
+      initContainers:
+        - name: wait-for-postgres
+          image: jwilder/dockerize:latest
+          command:
+            - /bin/sh
+            - '-c'
+            - dockerize -wait "tcp://$DB_HOST:$DB_PORT" -timeout 120s
+          envFrom:
+            - secretRef:
+                name: superset-env
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
       containers:
-      - name: myapp
-        image: nginx
-        ports:
-        - containerPort: 80
+        - name: superset
+          image: apache/superset:2.1.0
+          command:
+            - /bin/sh
+            - '-c'
+            - . /app/pythonpath/superset_bootstrap.sh; /usr/bin/run-server.sh
+          ports:
+            - name: http
+              containerPort: 8088
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: superset-env
+          env:
+            - name: SUPERSET_PORT
+              value: '8088'
+          resources: {}
+          volumeMounts:
+            - name: superset-config
+              readOnly: true
+              mountPath: /app/pythonpath
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 60
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext:
+        runAsUser: 0
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
