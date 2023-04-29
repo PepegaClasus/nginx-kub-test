@@ -11,8 +11,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: superset
     meta.helm.sh/release-namespace: apache-superset
-status:
-  loadBalancer: {}
 spec:
   ports:
     - name: http
@@ -22,7 +20,7 @@ spec:
   selector:
     app: superset
     release: superset
-  type: ClusterIP
+  type: LoadBalancer
   sessionAffinity: None
   ipFamilies:
     - IPv4
