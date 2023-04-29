@@ -29,14 +29,10 @@ spec:
   parallelism: 1
   completions: 1
   backoffLimit: 6
-  selector:
-    matchLabels:
-      controller-uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
   template:
     metadata:
       name: superset-init-db
       labels:
-        controller-uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
         job-name: superset-init-db
     spec:
       volumes:
