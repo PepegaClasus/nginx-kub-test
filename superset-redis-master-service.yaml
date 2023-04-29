@@ -21,9 +21,6 @@ spec:
     app.kubernetes.io/component: master
     app.kubernetes.io/instance: superset
     app.kubernetes.io/name: redis
-  clusterIP: 10.245.162.253
-  clusterIPs:
-    - 10.245.162.253
   type: ClusterIP
   sessionAffinity: None
   ipFamilies:
