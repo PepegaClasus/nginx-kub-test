@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: superset-init-db
-  namespace: apache-test
   uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
   resourceVersion: '788971'
   generation: 1
