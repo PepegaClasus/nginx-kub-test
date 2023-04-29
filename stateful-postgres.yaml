@@ -11,16 +11,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: superset
     meta.helm.sh/release-namespace: apache-superset
-status:
-  observedGeneration: 1
-  replicas: 1
-  readyReplicas: 1
-  currentReplicas: 1
-  updatedReplicas: 1
-  currentRevision: superset-postgresql-6c6cb67ff4
-  updateRevision: superset-postgresql-6c6cb67ff4
-  collisionCount: 0
-  availableReplicas: 1
 spec:
   replicas: 1
   selector:
@@ -163,8 +153,6 @@ spec:
           requests:
             storage: 8Gi
         volumeMode: Filesystem
-      status:
-        phase: Pending
   serviceName: superset-postgresql-hl
   podManagementPolicy: OrderedReady
   updateStrategy:
