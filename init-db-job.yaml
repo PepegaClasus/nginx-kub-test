@@ -14,17 +14,6 @@ metadata:
     batch.kubernetes.io/job-tracking: ''
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-delete-policy: before-hook-creation
-status:
-  conditions:
-    - type: Complete
-      status: 'True'
-      lastProbeTime: '2023-04-28T16:25:33Z'
-      lastTransitionTime: '2023-04-28T16:25:33Z'
-  startTime: '2023-04-28T16:23:56Z'
-  completionTime: '2023-04-28T16:25:33Z'
-  succeeded: 1
-  uncountedTerminatedPods: {}
-  ready: 0
 spec:
   parallelism: 1
   completions: 1
