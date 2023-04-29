@@ -22,9 +22,6 @@ spec:
   selector:
     app: superset
     release: superset
-  clusterIP: 10.245.10.114
-  clusterIPs:
-    - 10.245.10.114
   type: ClusterIP
   sessionAffinity: None
   ipFamilies:
