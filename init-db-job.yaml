@@ -2,8 +2,13 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: superset-init-db
+  namespace: apache-superset
+  uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
+  resourceVersion: '788971'
+  generation: 1
+  creationTimestamp: '2023-04-28T16:23:56Z'
   labels:
-    controller-uid: 4d45069a-abf8-48c7-8438-a399106f2740
+    controller-uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
     job-name: superset-init-db
   annotations:
     batch.kubernetes.io/job-tracking: ''
@@ -13,10 +18,10 @@ status:
   conditions:
     - type: Complete
       status: 'True'
-      lastProbeTime: '2023-04-28T13:50:40Z'
-      lastTransitionTime: '2023-04-28T13:50:40Z'
-  startTime: '2023-04-28T13:48:56Z'
-  completionTime: '2023-04-28T13:50:40Z'
+      lastProbeTime: '2023-04-28T16:25:33Z'
+      lastTransitionTime: '2023-04-28T16:25:33Z'
+  startTime: '2023-04-28T16:23:56Z'
+  completionTime: '2023-04-28T16:25:33Z'
   succeeded: 1
   uncountedTerminatedPods: {}
   ready: 0
@@ -26,12 +31,12 @@ spec:
   backoffLimit: 6
   selector:
     matchLabels:
-      controller-uid: 4d45069a-abf8-48c7-8438-a399106f2740
+      controller-uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
   template:
     metadata:
       name: superset-init-db
       labels:
-        controller-uid: 4d45069a-abf8-48c7-8438-a399106f2740
+        controller-uid: 0917c3c0-993d-48d7-b2b1-f90eb3570d89
         job-name: superset-init-db
     spec:
       volumes:

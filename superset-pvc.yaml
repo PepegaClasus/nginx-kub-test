@@ -18,6 +18,5 @@ spec:
   resources:
     requests:
       storage: 8Gi
-  volumeName: pvc-b5268149-d259-4855-a4a2-5804a1a982a0
   storageClassName: do-block-storage
   volumeMode: Filesystem
