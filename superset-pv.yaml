@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pvc-1
+  name: pvc-b5268149-d259-4855-a4a2-5804a1a982a0
   namespace: apache-test
   annotations:
     pv.kubernetes.io/provisioned-by: dobs.csi.digitalocean.com
